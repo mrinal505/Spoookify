@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spoookify - Unlimited Lossless Music Streaming</title>
+  <link rel="icon" type="image/png" href="spoookify_logo.png">
+  <style>
+    :root {
+      --spotify-green: #1DB954;
+      --spotify-dark: #121212;
+      --spotify-light-black: #181818;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: radial-gradient(circle at top, #0f2b18 0%, #121212 70%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      width: 100%;
+      margin: auto;
+    }
+    .logo-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 2.5rem 1.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .app-logo {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      box-shadow: 0 10px 30px rgba(29, 185, 84, 0.3);
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+    .app-logo:hover {
+      transform: scale(1.05);
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.25rem;
+    }
+    .tagline {
+      color: var(--spotify-green);
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .company {
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background-color: var(--spotify-green);
+      color: #000000;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4);
+      transition: all 0.2s ease;
+    }
+    .download-btn:hover {
+      background-color: #1ed760;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(29, 185, 84, 0.6);
+    }
+    .download-btn:active {
+      transform: translateY(0);
+    }
+    .version-info {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 0.75rem;
+    }
+    .features {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      text-align: left;
+    }
+    .feature-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 1rem;
+      border-radius: 16px;
+    }
+    .feature-item h3 {
+      font-size: 0.95rem;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    .feature-item p {
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-card">
+      <img src="spoookify_logo.png" alt="Spoookify Logo" class="app-logo">
+      <h1>Spoookify</h1>
+      <p class="tagline">Unlimited Lossless Music Streaming</p>
+      <p class="company">from MRD technologies</p>
+
+      <a href="https://drive.google.com/file/d/1aadhhXkXL_5F-8XJZ4QX1d8JM1ZO6PBL/view?usp=sharing" target="_blank" class="download-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download Android APK
+      </a>
+      <p class="version-info">Version 1.1.0 (25.2 MB) &bull; Free Direct Download</p>
+
+      <div class="features">
+        <div class="feature-item">
+          <h3>⚡ 100% Ad-Free</h3>
+          <p>Seamless uninterrupted music streaming experience.</p>
+        </div>
+        <div class="feature-item">
+          <h3>🔒 Guest Mode</h3>
+          <p>Instant access without mandatory login or data tracking.</p>
+        </div>
+        <div class="feature-item">
+          <h3>☁️ Cloud Backup</h3>
+          <p>Sync playlists & favorites with Google Account.</p>
+        </div>
+        <div class="feature-item">
+          <h3>🎧 High Quality</h3>
+          <p>Lossless high-bitrate audio playback engine.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Spoookify by <strong>MRD technologies</strong>. All rights reserved.
+  </footer>
+</body>
+</html>

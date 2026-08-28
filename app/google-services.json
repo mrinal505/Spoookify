@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "252519054082",
+    "project_id": "spoookify-1",
+    "storage_bucket": "spoookify-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252519054082:android:ecf94b0655e790c36e201b",
+        "android_client_info": {
+          "package_name": "com.spoookify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252519054082-cqndg67luq0svuii6fcihqe40or7f5e2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.spoookify",
+            "certificate_hash": "801d5603a96ececbd40acde88526222a6ad92532"
+          }
+        },
+        {
+          "client_id": "252519054082-fc6d2p8pimqckrdfu6hm78hm9kksl2p3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeH8f-oiaDPFzoBB4YK0hd1CtHFoq9TXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252519054082-fc6d2p8pimqckrdfu6hm78hm9kksl2p3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

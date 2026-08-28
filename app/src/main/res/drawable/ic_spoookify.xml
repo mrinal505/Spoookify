@@ -1,0 +1,35 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- Background Circle -->
+    <path
+        android:fillColor="#1DB954"
+        android:pathData="M100,100m-90,0a90,90 0,1 1,180 0a90,90 0,1 1,-180 0"/>
+
+    <!-- Ghost Body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,110 C60,70 140,70 140,110 L140,150 C140,150 130,140 120,150 C110,160 100,140 90,150 C80,160 70,140 60,150 L60,110 Z"/>
+
+    <!-- Eyes -->
+    <path
+        android:fillColor="#191414"
+        android:pathData="M85,105m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"/>
+    <path
+        android:fillColor="#191414"
+        android:pathData="M115,105m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"/>
+
+    <!-- Headphones -->
+    <path
+        android:strokeColor="#191414"
+        android:strokeWidth="6"
+        android:pathData="M55,115 C55,60 145,60 145,115"/>
+    <path
+        android:fillColor="#191414"
+        android:pathData="M50,105 L60,105 L60,125 L50,125 Z"/>
+    <path
+        android:fillColor="#191414"
+        android:pathData="M140,105 L150,105 L150,125 L140,125 Z"/>
+</vector>

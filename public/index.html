@@ -3,174 +3,1435 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spoookify - Unlimited Lossless Music Streaming</title>
+  <title>Spoookify - Unlimited Music Engine & App Download</title>
   <link rel="icon" type="image/png" href="spoookify_logo.png">
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  
+  <!-- FontAwesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --spotify-green: #1DB954;
-      --spotify-dark: #121212;
-      --spotify-light-black: #181818;
-      --glass-bg: rgba(255, 255, 255, 0.05);
-      --glass-border: rgba(255, 255, 255, 0.1);
+      --primary-neon: #00FF66;
+      --primary-glow: rgba(0, 255, 102, 0.4);
+      --bg-dark: #0A0D0A;
+      --card-bg: rgba(20, 28, 22, 0.65);
+      --card-border: rgba(0, 255, 102, 0.15);
+      --text-muted: #9EAB9F;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
+
     body {
-      background: radial-gradient(circle at top, #0f2b18 0%, #121212 70%);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(0, 255, 102, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(138, 43, 226, 0.08) 0%, transparent 40%);
       color: #ffffff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 2rem 1rem;
-      text-align: center;
+      overflow-x: hidden;
     }
-    .container {
-      max-width: 500px;
+
+    /* ---------------- MOBILE APP DOWNLOAD LANDING VIEW ---------------- */
+    #mobile-download-view {
+      display: none;
+      min-height: 100vh;
       width: 100%;
-      margin: auto;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      background: radial-gradient(circle at top, #0f2b18 0%, #0A0D0A 80%);
     }
-    .logo-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
+
+    .mobile-card {
+      background: rgba(20, 28, 22, 0.8);
+      border: 1px solid var(--primary-neon);
       border-radius: 28px;
       padding: 2.5rem 1.5rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 255, 102, 0.2);
+      backdrop-filter: blur(16px);
     }
-    .app-logo {
-      width: 130px;
-      height: 130px;
+
+    .mobile-logo {
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
-      box-shadow: 0 10px 30px rgba(29, 185, 84, 0.3);
+      box-shadow: 0 0 30px var(--primary-glow);
       margin-bottom: 1.5rem;
-      transition: transform 0.3s ease;
     }
-    .app-logo:hover {
-      transform: scale(1.05);
-    }
-    h1 {
-      font-size: 2.5rem;
+
+    .mobile-title {
+      font-size: 2.2rem;
       font-weight: 800;
-      letter-spacing: -0.5px;
       margin-bottom: 0.25rem;
     }
-    .tagline {
-      color: var(--spotify-green);
-      font-size: 1.05rem;
-      font-weight: 600;
+
+    .mobile-subtitle {
+      color: var(--primary-neon);
+      font-size: 1rem;
+      font-weight: 700;
       margin-bottom: 0.5rem;
     }
-    .company {
-      color: #888;
+
+    .mobile-company {
+      color: var(--text-muted);
       font-size: 0.85rem;
       margin-bottom: 2rem;
     }
-    .download-btn {
-      display: inline-flex;
+
+    .btn-mobile-download {
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
-      background-color: var(--spotify-green);
+      background: linear-gradient(135deg, #00FF66 0%, #00B347 100%);
       color: #000000;
       font-size: 1.15rem;
-      font-weight: 700;
+      font-weight: 800;
       text-decoration: none;
-      padding: 1rem 2rem;
+      padding: 1.1rem 2rem;
       border-radius: 50px;
       width: 100%;
-      box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4);
-      transition: all 0.2s ease;
+      box-shadow: 0 8px 24px var(--primary-glow);
+      margin-bottom: 1rem;
     }
-    .download-btn:hover {
-      background-color: #1ed760;
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(29, 185, 84, 0.6);
-    }
-    .download-btn:active {
-      transform: translateY(0);
-    }
-    .version-info {
-      font-size: 0.8rem;
-      color: #aaa;
-      margin-top: 0.75rem;
-    }
-    .features {
-      margin-top: 2rem;
+
+    .mobile-features {
+      margin-top: 1.5rem;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      gap: 0.75rem;
       text-align: left;
     }
-    .feature-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 1rem;
-      border-radius: 16px;
+
+    .mobile-feature-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.85rem;
+      border-radius: 14px;
     }
-    .feature-item h3 {
-      font-size: 0.95rem;
-      color: #fff;
-      margin-bottom: 0.25rem;
-    }
-    .feature-item p {
-      font-size: 0.8rem;
-      color: #aaa;
-    }
-    footer {
-      margin-top: 3rem;
+
+    .mobile-feature-item h4 {
       font-size: 0.85rem;
-      color: #666;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .mobile-feature-item p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .bypass-link {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 1.5rem;
+      display: inline-block;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* ---------------- DESKTOP WEB PLAYER VIEW ---------------- */
+    #web-player-view {
+      display: block;
+      padding-bottom: 120px;
+    }
+
+    /* Header Nav */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2rem;
+      background: rgba(10, 13, 10, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+    }
+
+    .brand-logo img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+
+    .brand-logo span {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .brand-logo small {
+      color: var(--primary-neon);
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .nav-search-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 0.65rem 1.25rem;
+      border-radius: 50px;
+      width: 420px;
+      max-width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .nav-search-bar:focus-within {
+      border-color: var(--primary-neon);
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+
+    .nav-search-bar i {
+      color: var(--text-muted);
+      margin-right: 0.75rem;
+    }
+
+    .nav-search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.95rem;
+      width: 100%;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-apk {
+      background: linear-gradient(135deg, #00FF66 0%, #00B347 100%);
+      color: #000000;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.3rem;
+      border-radius: 50px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
+    .btn-auth {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--card-border);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.3rem;
+      border-radius: 50px;
+      cursor: pointer;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 0.35rem 0.9rem 0.35rem 0.35rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .user-pill img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Responsive Device Picker & Sync Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(0, 255, 102, 0.12) 0%, rgba(20, 28, 22, 0.85) 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-text h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tab-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.6rem 1.3rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary-neon);
+      color: #000000;
+      border-color: var(--primary-neon);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    /* Where to Listen Device Picker Card */
+    .device-picker-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--primary-neon);
+      box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+      border-radius: 20px;
+      padding: 1.2rem 1.6rem;
+      min-width: 280px;
+    }
+
+    .device-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.6rem;
+    }
+
+    .device-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .device-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.8rem;
+      border-radius: 10px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .device-option.active {
+      border-color: var(--primary-neon);
+      background: rgba(0, 255, 102, 0.1);
+    }
+
+    .device-option-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .device-option-info i {
+      color: var(--primary-neon);
+    }
+
+    .section-header {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-header i {
+      color: var(--primary-neon);
+    }
+
+    /* Fully Responsive Grid Layout */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    @media (min-width: 1400px) {
+      .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      }
+    }
+
+    .music-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .music-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--primary-neon);
+      box-shadow: 0 10px 24px rgba(0, 255, 102, 0.2);
+    }
+
+    .card-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 0.85rem;
+    }
+
+    .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-btn-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .play-btn-overlay i {
+      width: 48px;
+      height: 48px;
+      background: var(--primary-neon);
+      color: #000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
+    .music-card:hover .play-btn-overlay {
+      opacity: 1;
+    }
+
+    .song-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .song-artist {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+    }
+
+    .heart-btn {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .heart-btn.liked {
+      color: var(--primary-neon);
+    }
+
+    /* Floating Player Bar */
+    .player-dock {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 2rem);
+      max-width: 1100px;
+      background: rgba(15, 22, 16, 0.95);
+      border: 1px solid var(--primary-neon);
+      box-shadow: 0 10px 30px rgba(0, 255, 102, 0.25);
+      border-radius: 24px;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+    }
+
+    .dock-track {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 30%;
+    }
+
+    .dock-track img {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .dock-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      width: 40%;
+    }
+
+    .dock-btns {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .dock-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .dock-btn.main-play {
+      width: 42px;
+      height: 42px;
+      background: var(--primary-neon);
+      color: #000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .time-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .range-input {
+      flex: 1;
+      height: 4px;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .range-input::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary-neon);
+      cursor: pointer;
+    }
+
+    .dock-volume {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 25%;
+      justify-content: flex-end;
+    }
+
+    .loading-spinner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 3rem;
+      color: var(--primary-neon);
+      font-size: 1.1rem;
+      font-weight: 700;
+      grid-column: 1 / -1;
+    }
+
+    /* Views */
+    .view-content { display: none; }
+    .view-content.active { display: block; }
+
+    #yt-hidden-player {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo-card">
-      <img src="spoookify_logo.png" alt="Spoookify Logo" class="app-logo">
-      <h1>Spoookify</h1>
-      <p class="tagline">Unlimited Lossless Music Streaming</p>
-      <p class="company">from MRD technologies</p>
 
-      <a href="https://drive.google.com/file/d/1aadhhXkXL_5F-8XJZ4QX1d8JM1ZO6PBL/view?usp=sharing" target="_blank" class="download-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        Download Android APK
+  <!-- MOBILE DOWNLOAD LANDING PAGE (Shown on Mobile Phones) -->
+  <div id="mobile-download-view">
+    <div class="mobile-card">
+      <img src="spoookify_logo.png" alt="Spoookify Logo" class="mobile-logo">
+      <h1 class="mobile-title">Spoookify Mobile</h1>
+      <p class="mobile-subtitle">Unlimited Lossless Music Streaming</p>
+      <p class="mobile-company">from MRD technologies</p>
+
+      <a href="https://drive.google.com/file/d/1aadhhXkXL_5F-8XJZ4QX1d8JM1ZO6PBL/view?usp=sharing" target="_blank" class="btn-mobile-download">
+        <i class="fa-brands fa-android"></i> Download Android APK
       </a>
-      <p class="version-info">Version 1.1.0 (25.2 MB) &bull; Free Direct Download</p>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">v1.2.0 (25.2 MB) &bull; Free Direct Install</p>
 
-      <div class="features">
-        <div class="feature-item">
-          <h3>⚡ 100% Ad-Free</h3>
-          <p>Seamless uninterrupted music streaming experience.</p>
+      <div class="mobile-features">
+        <div class="mobile-feature-item">
+          <h4>⚡ 100% Ad-Free</h4>
+          <p>Zero commercial interruptions.</p>
         </div>
-        <div class="feature-item">
-          <h3>🔒 Guest Mode</h3>
-          <p>Instant access without mandatory login or data tracking.</p>
+        <div class="mobile-feature-item">
+          <h4>🛡️ Guest Mode</h4>
+          <p>Instant access without mandatory login.</p>
         </div>
-        <div class="feature-item">
-          <h3>☁️ Cloud Backup</h3>
-          <p>Sync playlists & favorites with Google Account.</p>
+        <div class="mobile-feature-item">
+          <h4>☁️ Cloud Sync</h4>
+          <p>Sync playlists & liked songs.</p>
         </div>
-        <div class="feature-item">
-          <h3>🎧 High Quality</h3>
-          <p>Lossless high-bitrate audio playback engine.</p>
+        <div class="mobile-feature-item">
+          <h4>🎧 High Quality</h4>
+          <p>Lossless audio playback.</p>
         </div>
+      </div>
+
+      <span class="bypass-link" onclick="bypassMobileLanding()">Or Continue to Web Player anyway &rarr;</span>
+    </div>
+  </div>
+
+  <!-- DESKTOP WEB PLAYER VIEW (Shown on PC/Laptops/Tablets) -->
+  <div id="web-player-view">
+    <!-- Hidden Audio Players -->
+    <audio id="html5-audio-engine" crossorigin="anonymous"></audio>
+    <div id="yt-hidden-player"></div>
+
+    <!-- Header -->
+    <header>
+      <a href="#" class="brand-logo">
+        <img src="spoookify_logo.png" alt="Spoookify Logo">
+        <span>Spoookify</span>
+      </a>
+
+      <div class="nav-search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="search-input" placeholder="Search any song, artist (e.g. Arijit Singh, Taylor Swift)..." onkeyup="onSearchKey(event)">
+      </div>
+
+      <div class="header-actions">
+        <button class="btn-donate" onclick="openCryptoModal()" style="background: rgba(255, 215, 0, 0.15); border: 1px solid #ffd700; color: #ffd700; font-size: 0.9rem; font-weight: 700; padding: 0.55rem 1.1rem; border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+          <i class="fa-solid fa-heart" style="color: #ff4757;"></i> Donate
+        </button>
+        <a href="https://drive.google.com/file/d/1aadhhXkXL_5F-8XJZ4QX1d8JM1ZO6PBL/view?usp=sharing" target="_blank" class="btn-apk">
+          <i class="fa-brands fa-android"></i> Download APK
+        </a>
+        <div id="auth-box">
+          <button class="btn-auth" onclick="loginGoogle()">Sign In</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main View -->
+    <main>
+      <!-- Hero Banner with Where to Listen Device Picker -->
+      <div class="hero-banner">
+        <div class="hero-text">
+          <h1>Full-Length Music Engine</h1>
+          <p>Listen to complete untruncated songs & control playback live across Web & App.</p>
+          <div class="tab-pills">
+            <button class="tab-btn active" onclick="showTab('home-tab', this)"><i class="fa-solid fa-fire"></i> Live Full Music</button>
+            <button class="tab-btn" onclick="showTab('liked-tab', this)"><i class="fa-solid fa-heart"></i> Liked Songs (Synced)</button>
+            <button class="tab-btn" onclick="showTab('history-tab', this)"><i class="fa-solid fa-clock-rotate-left"></i> Past Played</button>
+          </div>
+        </div>
+
+        <!-- Where To Listen Device Selector -->
+        <div class="device-picker-card">
+          <div class="device-title"><i class="fa-solid fa-satellite-dish"></i> Where to Listen</div>
+          <div class="device-selector">
+            <div id="device-web" class="device-option active" onclick="selectActiveDevice('web_player')">
+              <div class="device-option-info">
+                <i class="fa-solid fa-laptop"></i>
+                <span>This Web Browser</span>
+              </div>
+              <i class="fa-solid fa-check" style="color: var(--primary-neon);"></i>
+            </div>
+
+            <div id="device-mobile" class="device-option" onclick="selectActiveDevice('mobile_app')">
+              <div class="device-option-info">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+                <span>Android App</span>
+              </div>
+              <i id="device-mobile-check" class="fa-solid fa-circle" style="font-size: 0.5rem; color: #555;"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: LIVE MUSIC EXPLORER -->
+      <div id="home-tab" class="view-content active">
+        <div class="section-header" id="section-1-header"><i class="fa-solid fa-bolt"></i> Global Full-Length Songs</div>
+        <div class="grid-container" id="grid-global">
+          <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Live Full Songs...</div>
+        </div>
+
+        <div class="section-header" id="section-2-header"><i class="fa-solid fa-music"></i> Trending Songs</div>
+        <div class="grid-container" id="grid-curated">
+          <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Full Songs...</div>
+        </div>
+      </div>
+
+      <!-- TAB: LIKED SONGS -->
+      <div id="liked-tab" class="view-content">
+        <div class="section-header"><i class="fa-solid fa-heart"></i> Your Liked Songs <span style="font-size: 0.9rem; color: var(--primary-neon); font-weight: normal;">(Synced Live with Phone)</span></div>
+        <div class="grid-container" id="grid-liked"></div>
+      </div>
+
+      <!-- TAB: PAST PLAYED HISTORY -->
+      <div id="history-tab" class="view-content">
+        <div class="section-header"><i class="fa-solid fa-clock-rotate-left"></i> Past Played History</div>
+        <div class="grid-container" id="grid-history"></div>
+      </div>
+    </main>
+
+    <!-- Floating Audio Player Bar -->
+    <div class="player-dock">
+      <div class="dock-track">
+        <img id="player-img" src="spoookify_logo.png" alt="Cover">
+        <div>
+          <div id="player-name" class="song-title">Select a Song</div>
+          <div id="player-by" class="song-artist">Spoookify Player</div>
+        </div>
+        <i id="dock-heart" class="fa-regular fa-heart heart-btn" onclick="toggleCurrentDockLike()" style="margin-left: 0.5rem;"></i>
+      </div>
+
+      <div class="dock-controls">
+        <div class="dock-btns">
+          <button class="dock-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="dock-btn main-play" onclick="togglePlayPause()"><i id="dock-play-icon" class="fa-solid fa-play"></i></button>
+          <button class="dock-btn" onclick="nextSong()"><i class="fa-solid fa-forward-step"></i></button>
+        </div>
+        <div class="time-bar">
+          <span id="time-current">0:00</span>
+          <input type="range" id="seek-slider" class="range-input" value="0" min="0" max="100" onchange="userSeek(this.value)">
+          <span id="time-total">0:00</span>
+        </div>
+      </div>
+
+      <div class="dock-volume">
+        <i class="fa-solid fa-volume-high" style="color: var(--text-muted);"></i>
+        <input type="range" id="vol-slider" class="range-input" min="0" max="100" value="80" onchange="userSetVolume(this.value)">
       </div>
     </div>
   </div>
 
-  <footer>
-    &copy; 2026 Spoookify by <strong>MRD technologies</strong>. All rights reserved.
-  </footer>
+  <!-- YouTube iFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <script>
+    // MOBILE DETECTION & SCREEN RESPONSIVENESS
+    function checkMobileDevice() {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+      const isSmallWidth = window.innerWidth <= 768;
+      
+      if ((isMobileUA || isSmallWidth) && !sessionStorage.getItem('bypassMobileView')) {
+        document.getElementById('mobile-download-view').style.display = 'flex';
+        document.getElementById('web-player-view').style.display = 'none';
+      } else {
+        document.getElementById('mobile-download-view').style.display = 'none';
+        document.getElementById('web-player-view').style.display = 'block';
+      }
+    }
+
+    function bypassMobileLanding() {
+      sessionStorage.setItem('bypassMobileView', 'true');
+      document.getElementById('mobile-download-view').style.display = 'none';
+      document.getElementById('web-player-view').style.display = 'block';
+    }
+
+    checkMobileDevice();
+    window.addEventListener('resize', checkMobileDevice);
+
+    // Firebase Setup
+    const firebaseConfig = {
+      apiKey: "AIzaSyBeH8f-oiaDPFzoBB4YK0hd1CtHFoq9TXw",
+      authDomain: "spoookify-1.firebaseapp.com",
+      projectId: "spoookify-1",
+      storageBucket: "spoookify-1.firebasestorage.app",
+      messagingSenderId: "252519054082",
+      appId: "1:252519054082:android:ecf94b0655e790c36e201b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const audioEngine = document.getElementById('html5-audio-engine');
+    let currentUser = null;
+    let likedSongs = [];
+    let historySongs = [];
+    let activeTrack = null;
+    let ytPlayer = null;
+    let isPlaying = false;
+    let activeDeviceId = 'web_player';
+    let updateTimer = null;
+    let currentPlaylist = [];
+    let currentIndex = 0;
+
+    function onYouTubeIframeAPIReady() {
+      ytPlayer = new YT.Player('yt-hidden-player', {
+        height: '1',
+        width: '1',
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        document.getElementById('dock-play-icon').className = 'fa-solid fa-pause';
+        startSeekTimer();
+        publishPlaybackState('PLAY');
+      } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+        isPlaying = false;
+        document.getElementById('dock-play-icon').className = 'fa-solid fa-play';
+        clearInterval(updateTimer);
+        publishPlaybackState('PAUSED');
+        if (event.data === YT.PlayerState.ENDED) {
+          nextSong();
+        }
+      }
+    }
+
+    audioEngine.onplay = () => {
+      isPlaying = true;
+      document.getElementById('dock-play-icon').className = 'fa-solid fa-pause';
+      startSeekTimerHTML5();
+      publishPlaybackState('PLAY');
+    };
+
+    audioEngine.onpause = () => {
+      isPlaying = false;
+      document.getElementById('dock-play-icon').className = 'fa-solid fa-play';
+      clearInterval(updateTimer);
+      publishPlaybackState('PAUSED');
+    };
+
+    audioEngine.onended = () => {
+      nextSong();
+    };
+
+    // Full-Length Live Music Search Engine
+    async function searchLiveMusic(query) {
+      const pipedInstances = [
+        'https://pipedapi.kavin.rocks',
+        'https://api.piped.private.coffee',
+        'https://pipedapi.mha.fi'
+      ];
+
+      for (const instance of pipedInstances) {
+        try {
+          const res = await fetch(`${instance}/search?q=${encodeURIComponent(query + " full song")}&filter=music_songs`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.items && data.items.length > 0) {
+              return data.items.slice(0, 24).map(item => {
+                const videoId = item.url ? item.url.replace('/watch?v=', '') : '';
+                return {
+                  id: videoId,
+                  title: item.title || 'Song',
+                  artist: item.uploaderName || 'Artist',
+                  thumbnailUrl: item.thumbnail || 'spoookify_logo.png'
+                };
+              }).filter(s => s.id);
+            }
+          }
+        } catch (e) {
+          console.log("Retrying piped instance...");
+        }
+      }
+
+      try {
+        const res = await fetch(`https://inv.tux.pizza/api/v1/search?q=${encodeURIComponent(query + " full song")}&type=video`);
+        if (res.ok) {
+          const items = await res.json();
+          if (items && items.length > 0) {
+            return items.slice(0, 24).map(item => ({
+              id: item.videoId,
+              title: item.title || 'Song',
+              artist: item.author || 'Artist',
+              thumbnailUrl: (item.videoThumbnails && item.videoThumbnails[0]) ? item.videoThumbnails[0].url : 'spoookify_logo.png'
+            })).filter(s => s.id);
+          }
+        }
+      } catch (e) {
+        console.error("Invidious fallback error:", e);
+      }
+
+      return [];
+    }
+
+    async function loadDefaultMusic() {
+      const globalHits = await searchLiveMusic("Top Hit Songs 2026");
+      if (globalHits && globalHits.length > 0) {
+        currentPlaylist = globalHits;
+        renderGrid('grid-global', globalHits);
+      }
+
+      const indianHits = await searchLiveMusic("Arijit Singh Full Songs");
+      if (indianHits && indianHits.length > 0) {
+        renderGrid('grid-curated', indianHits);
+      }
+    }
+
+    // Auth & Real-Time Sync
+    auth.onAuthStateChanged((user) => {
+      currentUser = user;
+      const authBox = document.getElementById('auth-box');
+      if (user) {
+        authBox.innerHTML = `
+          <div class="user-pill">
+            <img src="${user.photoURL || 'spoookify_logo.png'}" alt="User">
+            <span>${user.displayName || 'User'}</span>
+            <i class="fa-solid fa-power-off" onclick="logout()" style="margin-left: 0.4rem; cursor: pointer; color: #aaa;"></i>
+          </div>
+        `;
+
+        db.collection('users').doc(user.uid).collection('data').doc('favorites')
+          .onSnapshot((doc) => {
+            if (doc.exists && doc.data().tracks) {
+              likedSongs = doc.data().tracks;
+              renderGrid('grid-liked', likedSongs);
+            }
+          });
+
+        db.collection('users').doc(user.uid).collection('data').doc('history')
+          .onSnapshot((doc) => {
+            if (doc.exists && doc.data().tracks) {
+              historySongs = doc.data().tracks;
+              renderGrid('grid-history', historySongs);
+            }
+          });
+
+        db.collection('users').doc(user.uid).collection('data').doc('playback_state')
+          .onSnapshot((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              if (data.commandSource !== 'web_player') {
+                handleRemotePlaybackState(data);
+              }
+            }
+          });
+      } else {
+        authBox.innerHTML = `<button class="btn-auth" onclick="loginGoogle()">Sign In</button>`;
+        likedSongs = [];
+        historySongs = [];
+        renderGrid('grid-liked', []);
+        renderGrid('grid-history', []);
+      }
+    });
+
+    function loginGoogle() {
+      auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    }
+
+    function logout() {
+      auth.signOut();
+    }
+
+    function selectActiveDevice(deviceId) {
+      if (deviceId === 'mobile_app' && !currentUser) {
+        alert("Please Sign In with Google at the top right to remote control your Android Phone!");
+        return;
+      }
+      activeDeviceId = deviceId;
+      document.getElementById('device-web').classList.toggle('active', deviceId === 'web_player');
+      document.getElementById('device-mobile').classList.toggle('active', deviceId === 'mobile_app');
+      
+      const webCheck = document.getElementById('device-web').querySelector('i:last-child');
+      const mobCheck = document.getElementById('device-mobile').querySelector('i:last-child');
+
+      if (deviceId === 'web_player') {
+        if (webCheck) { webCheck.className = 'fa-solid fa-check'; webCheck.style.color = 'var(--primary-neon)'; webCheck.style.fontSize = '1rem'; }
+        if (mobCheck) { mobCheck.className = 'fa-solid fa-circle'; mobCheck.style.color = '#555'; mobCheck.style.fontSize = '0.5rem'; }
+      } else {
+        if (webCheck) { webCheck.className = 'fa-solid fa-circle'; webCheck.style.color = '#555'; webCheck.style.fontSize = '0.5rem'; }
+        if (mobCheck) { mobCheck.className = 'fa-solid fa-check'; mobCheck.style.color = 'var(--primary-neon)'; mobCheck.style.fontSize = '1rem'; }
+        
+        if (audioEngine.src) audioEngine.pause();
+        if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+        isPlaying = false;
+        document.getElementById('dock-play-icon').className = 'fa-solid fa-play';
+      }
+
+      publishPlaybackState('DEVICE_CHANGE');
+    }
+
+    function publishPlaybackState(cmd) {
+      if (!currentUser) {
+        if (activeDeviceId === 'mobile_app') {
+          alert("Please Sign In with Google at the top right of the website to remote control your Android Phone!");
+        }
+        return;
+      }
+      if (!activeTrack) return;
+      db.collection('users').doc(currentUser.uid).collection('data').doc('playback_state')
+        .set({
+          activeDeviceId: activeDeviceId,
+          commandSource: 'web_player',
+          command: cmd,
+          trackId: activeTrack.id,
+          title: activeTrack.title,
+          artist: activeTrack.artist,
+          thumbnailUrl: activeTrack.thumbnailUrl,
+          audioUrl: activeTrack.audioUrl || '',
+          isPlaying: (cmd === 'PLAY'),
+          timestamp: Date.now()
+        }, { merge: true });
+    }
+
+    function handleRemotePlaybackState(data) {
+      if (data.activeDeviceId === 'mobile_app') {
+        selectActiveDevice('mobile_app');
+      }
+      if (data.trackId && (!activeTrack || activeTrack.id !== data.trackId)) {
+        activeTrack = { id: data.trackId, title: data.title, artist: data.artist, thumbnailUrl: data.thumbnailUrl, audioUrl: data.audioUrl || '' };
+        document.getElementById('player-name').innerText = data.title;
+        document.getElementById('player-by').innerText = data.artist;
+        document.getElementById('player-img').src = data.thumbnailUrl || 'spoookify_logo.png';
+      }
+      if (data.isPlaying && !isPlaying && activeDeviceId === 'web_player') {
+        if (audioEngine.src) audioEngine.play();
+        else if (ytPlayer && ytPlayer.playVideo) ytPlayer.playVideo();
+      } else if (!data.isPlaying && isPlaying && activeDeviceId === 'web_player') {
+        audioEngine.pause();
+        if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+      }
+    }
+
+    // BULLETPROOF EVENT DELEGATION & DATA ATTRIBUTES (100% Clickable Songs)
+    function renderGrid(elementId, songs) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      if (!songs || songs.length === 0) {
+        el.innerHTML = `<p style="color: var(--text-muted); padding: 1.5rem;">No songs in this list yet.</p>`;
+        return;
+      }
+      el.innerHTML = songs.map((s, idx) => {
+        const isLiked = likedSongs.some(item => item.id === s.id || item.title === s.title);
+        return `
+          <div class="music-card" data-idx="${idx}" data-grid="${elementId}">
+            <div class="card-thumb">
+              <img src="${escapeAttr(s.thumbnailUrl || 'spoookify_logo.png')}" alt="${escapeHtml(s.title)}">
+              <div class="play-btn-overlay"><i class="fa-solid fa-play"></i></div>
+            </div>
+            <div class="song-title">${escapeHtml(s.title)}</div>
+            <div class="song-artist">${escapeHtml(s.artist)}</div>
+            <div class="card-bottom">
+              <i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart heart-btn ${isLiked ? 'liked' : ''}" data-heart-idx="${idx}" data-grid="${elementId}"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      el.querySelectorAll('.music-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.classList.contains('heart-btn')) {
+            const idx = e.target.getAttribute('data-heart-idx');
+            const song = songs[idx];
+            if (song) toggleLike(song.id, song.title, song.artist, song.thumbnailUrl);
+            return;
+          }
+          const idx = card.getAttribute('data-idx');
+          const song = songs[idx];
+          if (song) {
+            currentPlaylist = songs;
+            currentIndex = parseInt(idx);
+            playSong(song.id, song.title, song.artist, song.thumbnailUrl);
+          }
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function escapeAttr(str) {
+      return (str || '').replace(/"/g, "&quot;");
+    }
+
+    async function playSong(id, title, artist, thumbnailUrl) {
+      activeTrack = { id, title, artist, thumbnailUrl };
+      document.getElementById('player-name').innerText = title;
+      document.getElementById('player-by').innerText = artist;
+      document.getElementById('player-img').src = thumbnailUrl || 'spoookify_logo.png';
+      updateDockHeart();
+
+      addToHistory(activeTrack);
+
+      let fetchedAudioUrl = '';
+      try {
+        const res = await fetch(`https://pipedapi.kavin.rocks/streams/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.audioStreams && data.audioStreams.length > 0) {
+            fetchedAudioUrl = data.audioStreams[0].url;
+          }
+        }
+      } catch (e) {
+        console.log("Stream url fetch fallback...");
+      }
+
+      activeTrack.audioUrl = fetchedAudioUrl;
+
+      if (activeDeviceId === 'web_player') {
+        if (fetchedAudioUrl) {
+          if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+          audioEngine.src = fetchedAudioUrl;
+          audioEngine.play().catch(e => console.error(e));
+        } else if (ytPlayer && ytPlayer.loadVideoById) {
+          audioEngine.pause();
+          ytPlayer.loadVideoById(id);
+        }
+      } else {
+        publishPlaybackState('PLAY');
+      }
+    }
+
+    function nextSong() {
+      if (currentPlaylist.length > 0) {
+        currentIndex = (currentIndex + 1) % currentPlaylist.length;
+        const s = currentPlaylist[currentIndex];
+        playSong(s.id, s.title, s.artist, s.thumbnailUrl);
+      }
+    }
+
+    function prevSong() {
+      if (currentPlaylist.length > 0) {
+        currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+        const s = currentPlaylist[currentIndex];
+        playSong(s.id, s.title, s.artist, s.thumbnailUrl);
+      }
+    }
+
+    function addToHistory(track) {
+      if (!currentUser) return;
+      let updated = [track, ...historySongs.filter(s => s.id !== track.id)].slice(0, 25);
+      db.collection('users').doc(currentUser.uid).collection('data').doc('history')
+        .set({ tracks: updated }, { merge: true })
+        .then(() => {
+          historySongs = updated;
+          renderGrid('grid-history', historySongs);
+        });
+    }
+
+    function togglePlayPause() {
+      if (activeDeviceId === 'web_player') {
+        if (audioEngine.src && audioEngine.src.length > 5 && !audioEngine.paused) {
+          audioEngine.pause();
+          isPlaying = false;
+          document.getElementById('dock-play-icon').className = 'fa-solid fa-play';
+          publishPlaybackState('PAUSED');
+          return;
+        } else if (audioEngine.src && audioEngine.src.length > 5 && audioEngine.paused) {
+          audioEngine.play();
+          isPlaying = true;
+          document.getElementById('dock-play-icon').className = 'fa-solid fa-pause';
+          publishPlaybackState('PLAY');
+          return;
+        }
+
+        if (ytPlayer && ytPlayer.getPlayerState) {
+          const state = ytPlayer.getPlayerState();
+          if (state === YT.PlayerState.PLAYING) {
+            ytPlayer.pauseVideo();
+            isPlaying = false;
+            document.getElementById('dock-play-icon').className = 'fa-solid fa-play';
+            publishPlaybackState('PAUSED');
+          } else {
+            ytPlayer.playVideo();
+            isPlaying = true;
+            document.getElementById('dock-play-icon').className = 'fa-solid fa-pause';
+            publishPlaybackState('PLAY');
+          }
+        }
+      } else {
+        isPlaying = !isPlaying;
+        document.getElementById('dock-play-icon').className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+        publishPlaybackState(isPlaying ? 'PLAY' : 'PAUSE');
+      }
+    }
+
+    function toggleLike(id, title, artist, thumbnailUrl) {
+      if (!currentUser) {
+        alert("Please Sign In with Google to sync Liked Songs with your mobile app!");
+        return;
+      }
+      const idx = likedSongs.findIndex(s => s.id === id || s.title === title);
+      let updated = [...likedSongs];
+      if (idx >= 0) {
+        updated.splice(idx, 1);
+      } else {
+        updated.push({ id, title, artist, thumbnailUrl });
+      }
+      db.collection('users').doc(currentUser.uid).collection('data').doc('favorites')
+        .set({ tracks: updated })
+        .then(() => {
+          likedSongs = updated;
+          renderGrid('grid-liked', likedSongs);
+          updateDockHeart();
+        });
+    }
+
+    function updateDockHeart() {
+      if (!activeTrack) return;
+      const isLiked = likedSongs.some(s => s.id === activeTrack.id || s.title === activeTrack.title);
+      document.getElementById('dock-heart').className = `fa-${isLiked ? 'solid' : 'regular'} fa-heart heart-btn ${isLiked ? 'liked' : ''}`;
+    }
+
+    function toggleCurrentDockLike() {
+      if (activeTrack) {
+        toggleLike(activeTrack.id, activeTrack.title, activeTrack.artist, activeTrack.thumbnailUrl);
+      }
+    }
+
+    function startSeekTimerHTML5() {
+      clearInterval(updateTimer);
+      updateTimer = setInterval(() => {
+        if (audioEngine && !isNaN(audioEngine.duration) && audioEngine.duration > 0) {
+          document.getElementById('seek-slider').value = (audioEngine.currentTime / audioEngine.duration) * 100;
+          document.getElementById('time-current').innerText = fmtTime(audioEngine.currentTime);
+          document.getElementById('time-total').innerText = fmtTime(audioEngine.duration);
+        }
+      }, 500);
+    }
+
+    function startSeekTimer() {
+      clearInterval(updateTimer);
+      updateTimer = setInterval(() => {
+        if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
+          const curr = ytPlayer.getCurrentTime();
+          const total = ytPlayer.getDuration();
+          if (total > 0) {
+            document.getElementById('seek-slider').value = (curr / total) * 100;
+            document.getElementById('time-current').innerText = fmtTime(curr);
+            document.getElementById('time-total').innerText = fmtTime(total);
+          }
+        }
+      }, 1000);
+    }
+
+    function userSeek(val) {
+      if (audioEngine.src && !isNaN(audioEngine.duration)) {
+        audioEngine.currentTime = (val / 100) * audioEngine.duration;
+      } else if (ytPlayer && ytPlayer.getDuration) {
+        const total = ytPlayer.getDuration();
+        ytPlayer.seekTo((val / 100) * total, true);
+      }
+    }
+
+    function userSetVolume(val) {
+      audioEngine.volume = val / 100;
+      if (ytPlayer && ytPlayer.setVolume) {
+        ytPlayer.setVolume(val);
+      }
+    }
+
+    function fmtTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    async function onSearchKey(e) {
+      if (e.key === 'Enter') {
+        const q = e.target.value.trim();
+        if (q) {
+          showTab('home-tab', document.querySelectorAll('.tab-btn')[0]);
+          document.getElementById('section-1-header').innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Full-Length Results for "${q}"`;
+          document.getElementById('grid-global').innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching full songs for "${q}"...</div>`;
+          
+          const results = await searchLiveMusic(q);
+          if (results && results.length > 0) {
+            currentPlaylist = results;
+            currentIndex = 0;
+            renderGrid('grid-global', results);
+          } else {
+            document.getElementById('grid-global').innerHTML = `<p style="color: var(--text-muted); padding: 1.5rem;">No full songs found for "${q}". Try another search query.</p>`;
+          }
+        }
+      }
+    }
+
+    loadDefaultMusic();
+
+    // CRYPTO DONATIONS MODAL LOGIC
+    const cryptoWallets = {
+      ETH: { name: 'Ethereum (ERC-20)', address: '0x5A9fb97BCe03dc19Bd5C5a1C5d9589724886faF7', color: '#627EEA' },
+      BTC: { name: 'Bitcoin', address: 'bc1qe07ama7xm6kelgnmtt4vw0v67dajqp8dshyypg', color: '#F7931A' },
+      SOL: { name: 'Solana', address: '6inmZtJP2UGrKEKFEJamJ9L1CRSZvWpki1zq9xdSocsU', color: '#14F195' },
+      TRX: { name: 'TRON (TRC-20)', address: 'TG29v6vuJBfsUGqbbcjFvz8iB5yJCDjsK2', color: '#FF0013' }
+    };
+    let currentCryptoKey = 'ETH';
+
+    function openCryptoModal() {
+      document.getElementById('crypto-modal').style.display = 'flex';
+    }
+
+    function closeCryptoModal() {
+      document.getElementById('crypto-modal').style.display = 'none';
+    }
+
+    function switchCryptoTab(key, btnEl) {
+      currentCryptoKey = key;
+      const wallet = cryptoWallets[key];
+      document.querySelectorAll('.crypto-tab').forEach(b => {
+        b.style.background = 'rgba(255,255,255,0.05)';
+        b.style.color = '#fff';
+        b.classList.remove('active');
+      });
+      btnEl.style.background = wallet.color;
+      btnEl.style.color = (key === 'SOL' || key === 'BTC') ? '#000' : '#fff';
+      btnEl.classList.add('active');
+
+      document.getElementById('crypto-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?data=${wallet.address}&size=200x200`;
+      document.getElementById('crypto-coin-name').innerText = wallet.name;
+      document.getElementById('crypto-coin-name').style.color = wallet.color;
+      document.getElementById('crypto-address-text').innerText = wallet.address;
+      document.getElementById('crypto-copy-btn').innerText = '📋 Copy';
+      document.getElementById('crypto-copy-btn').style.background = 'var(--primary-neon)';
+    }
+
+    function copyCryptoAddress() {
+      const wallet = cryptoWallets[currentCryptoKey];
+      navigator.clipboard.writeText(wallet.address).then(() => {
+        const btn = document.getElementById('crypto-copy-btn');
+        btn.innerText = '✅ Copied!';
+        btn.style.background = '#14F195';
+        setTimeout(() => {
+          btn.innerText = '📋 Copy';
+          btn.style.background = 'var(--primary-neon)';
+        }, 2000);
+      }).catch(err => {
+        prompt("Copy wallet address:", wallet.address);
+      });
+    }
+  </script>
+
+  <!-- CRYPTO DONATION MODAL -->
+  <div id="crypto-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: #141c16; border: 1px solid var(--primary-neon); border-radius: 24px; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 0 40px rgba(0, 255, 102, 0.3); color: #fff; text-align: center; position: relative;">
+      <button onclick="closeCryptoModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #888; font-size: 1.8rem; cursor: pointer; line-height: 1;">&times;</button>
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; color: #fff;">💖 Support & Crypto Donations</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Scan QR code or click to copy address</p>
+      
+      <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem;">
+        <button class="crypto-tab active" onclick="switchCryptoTab('ETH', this)" style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid #627EEA; background: #627EEA; color: #fff; font-weight: 700; cursor: pointer;">ETH</button>
+        <button class="crypto-tab" onclick="switchCryptoTab('BTC', this)" style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid #F7931A; background: rgba(255,255,255,0.05); color: #fff; font-weight: 700; cursor: pointer;">BTC</button>
+        <button class="crypto-tab" onclick="switchCryptoTab('SOL', this)" style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid #14F195; background: rgba(255,255,255,0.05); color: #fff; font-weight: 700; cursor: pointer;">SOL</button>
+        <button class="crypto-tab" onclick="switchCryptoTab('TRX', this)" style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid #FF0013; background: rgba(255,255,255,0.05); color: #fff; font-weight: 700; cursor: pointer;">TRX</button>
+      </div>
+
+      <div style="background: #fff; padding: 0.8rem; border-radius: 16px; display: inline-block; margin-bottom: 1rem;">
+        <img id="crypto-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?data=0x5A9fb97BCe03dc19Bd5C5a1C5d9589724886faF7&size=200x200" alt="Crypto QR Code" style="width: 170px; height: 170px; display: block;">
+      </div>
+
+      <div id="crypto-coin-name" style="font-size: 1.1rem; font-weight: 800; color: #627EEA; margin-bottom: 0.75rem;">Ethereum (ERC-20)</div>
+
+      <div onclick="copyCryptoAddress()" style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 0.5rem;">
+        <span id="crypto-address-text" style="font-family: monospace; font-size: 0.82rem; word-break: break-all; color: #fff;">0x5A9fb97BCe03dc19Bd5C5a1C5d9589724886faF7</span>
+        <button id="crypto-copy-btn" style="background: var(--primary-neon); color: #000; border: none; border-radius: 8px; padding: 0.4rem 0.8rem; font-weight: 800; font-size: 0.8rem; cursor: pointer; flex-shrink: 0;">📋 Copy</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

@@ -138,7 +138,6 @@ class YoutubeExtractor @Inject constructor() {
             extractor.fetchPage()
             
             val audioStreams = extractor.audioStreams
-            // Sort by average bitrate descending to get highest quality
             val streamUrl = audioStreams
                 .sortedByDescending { it.averageBitrate }
                 .firstOrNull { it.format?.name == "opus" || it.format?.name == "m4a" }?.url
@@ -146,11 +145,33 @@ class YoutubeExtractor @Inject constructor() {
                 
             if (streamUrl != null) {
                 urlCache[videoId] = UrlCacheEntry(streamUrl, System.currentTimeMillis())
+                return@withContext streamUrl
             }
-            streamUrl
         } catch (e: Exception) {
             e.printStackTrace()
-            null
         }
+
+        try {
+            val pipedUrl = "https://pipedapi.kavin.rocks/streams/$videoId"
+            val conn = java.net.URL(pipedUrl).openConnection() as java.net.HttpURLConnection
+            conn.connectTimeout = 5000
+            conn.readTimeout = 5000
+            if (conn.responseCode == 200) {
+                val text = conn.inputStream.bufferedReader().use { it.readText() }
+                val json = org.json.JSONObject(text)
+                val streams = json.optJSONArray("audioStreams")
+                if (streams != null && streams.length() > 0) {
+                    val directUrl = streams.getJSONObject(0).optString("url")
+                    if (directUrl.isNotEmpty()) {
+                        urlCache[videoId] = UrlCacheEntry(directUrl, System.currentTimeMillis())
+                        return@withContext directUrl
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        null
     }
 }

@@ -367,8 +367,16 @@ fun SettingsScreen(
                 )
             }
 
+            SettingsSection(title = "Support & Crypto Donations") {
+                SettingsItem(
+                    title = "Support Developer (Crypto)", 
+                    subtitle = "Donate via ETH, BTC, SOL, or TRX (QR & Click to Copy)",
+                    onClick = { activeDialog = "crypto_donations" }
+                )
+            }
+
             SettingsSection(title = "About Spoookify") {
-                SettingsItem(title = "App Version", subtitle = "v1.1.0 (Build 6)")
+                SettingsItem(title = "App Version", subtitle = "v1.2.0 (Build 7)")
             }
             
             Spacer(modifier = Modifier.height(40.dp))
@@ -376,6 +384,9 @@ fun SettingsScreen(
 
         // Active Dialog Windows
         when (activeDialog) {
+            "crypto_donations" -> {
+                CryptoDonationDialog(onDismiss = { activeDialog = null })
+            }
             "theme_presets" -> {
                 val currentTheme by themeViewModel.appTheme.collectAsState()
                 AlertDialog(
@@ -745,5 +756,138 @@ fun SettingsItem(title: String, subtitle: String? = null, onClick: (() -> Unit)?
         }
     }
 }
+
+@Composable
+fun CryptoDonationDialog(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+
+    val wallets = remember {
+        listOf(
+            CryptoWallet("ETH", "Ethereum (ERC-20)", "0x5A9fb97BCe03dc19Bd5C5a1C5d9589724886faF7", Color(0xFF627EEA)),
+            CryptoWallet("BTC", "Bitcoin", "bc1qe07ama7xm6kelgnmtt4vw0v67dajqp8dshyypg", Color(0xFFF7931A)),
+            CryptoWallet("SOL", "Solana", "6inmZtJP2UGrKEKFEJamJ9L1CRSZvWpki1zq9xdSocsU", Color(0xFF14F195)),
+            CryptoWallet("TRX", "TRON (TRC-20)", "TG29v6vuJBfsUGqbbcjFvz8iB5yJCDjsK2", Color(0xFFFF0013))
+        )
+    }
+
+    var selectedWallet by remember { mutableStateOf(wallets[0]) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close", color = SpotifyGreen, fontWeight = FontWeight.Bold)
+            }
+        },
+        title = {
+            Column {
+                Text("💖 Support & Crypto Donations", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text("Scan QR code or click to copy address", color = Color.Gray, fontSize = 12.sp)
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    wallets.forEach { wallet ->
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = if (selectedWallet.symbol == wallet.symbol) wallet.accentColor else GlassSurface,
+                            modifier = Modifier
+                                .clickable { selectedWallet = wallet }
+                                .padding(2.dp)
+                        ) {
+                            Text(
+                                text = wallet.symbol,
+                                color = if (selectedWallet.symbol == wallet.symbol) Color.Black else Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color.White,
+                    modifier = Modifier
+                        .size(180.dp)
+                        .padding(4.dp)
+                ) {
+                    coil.compose.AsyncImage(
+                        model = "https://api.qrserver.com/v1/create-qr-code/?data=${selectedWallet.address}&size=300x300",
+                        contentDescription = "${selectedWallet.name} QR Code",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = selectedWallet.name,
+                    color = selectedWallet.accentColor,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color.Black.copy(alpha = 0.6f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(selectedWallet.address))
+                            Toast.makeText(context, "${selectedWallet.symbol} Address Copied!", Toast.LENGTH_SHORT).show()
+                        }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = selectedWallet.address,
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = "📋 Copy",
+                            color = SpotifyGreen,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+        },
+        containerColor = SpotifyDarkGrey
+    )
+}
+
+data class CryptoWallet(
+    val symbol: String,
+    val name: String,
+    val address: String,
+    val accentColor: Color
+)
 
 

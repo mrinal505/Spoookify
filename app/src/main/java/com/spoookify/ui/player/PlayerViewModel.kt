@@ -27,8 +27,46 @@ class PlayerViewModel @Inject constructor(
     private val smartQueueManager: SmartQueueManager,
     private val offlineManager: OfflineManager,
     private val userPreferencesRepository: com.spoookify.data.repository.UserPreferencesRepository,
-    private val analyticsRepository: com.spoookify.data.repository.UserAnalyticsRepository
+    private val analyticsRepository: com.spoookify.data.repository.UserAnalyticsRepository,
+    private val cloudSyncRepository: com.spoookify.data.repository.CloudSyncRepository
 ) : ViewModel() {
+
+    init {
+        cloudSyncRepository.listenToRemotePlaybackCommands { cmd, trackId, title, artist, thumbnailUrl, audioUrl ->
+            viewModelScope.launch {
+                when (cmd) {
+                    "PLAY" -> {
+                        val current = musicController.currentTrack.value
+                        if (current == null || current.id != trackId) {
+                            val trackToPlay = Track(
+                                id = trackId,
+                                title = title.ifEmpty { "Synced Track" },
+                                artist = artist.ifEmpty { "Spoookify Web" },
+                                thumbnailUrl = thumbnailUrl,
+                                audioUrl = audioUrl.ifEmpty { null }
+                            )
+                            musicController.playTrack(trackToPlay)
+                        } else {
+                            if (!musicController.isPlaying.value) {
+                                musicController.togglePlayPause()
+                            }
+                        }
+                    }
+                    "PAUSE", "PAUSED" -> {
+                        if (musicController.isPlaying.value) {
+                            musicController.togglePlayPause()
+                        }
+                    }
+                    "NEXT" -> {
+                        musicController.skipNext()
+                    }
+                    "PREV" -> {
+                        musicController.skipPrevious()
+                    }
+                }
+            }
+        }
+    }
 
     val skipIntervalSeconds = userPreferencesRepository.skipIntervalSeconds
 

@@ -56,6 +56,19 @@
 
 ---
 
+## 💖 Support & Crypto Donations
+
+If you love using **Spoookify** and want to support its ongoing development, feel free to donate via crypto:
+
+| Coin | Network / Symbol | Wallet Address | QR Code |
+| :--- | :--- | :--- | :---: |
+| **Ethereum** | ETH (ERC-20) | `0x5A9fb97BCe03dc19Bd5C5a1C5d9589724886faF7` | <img src="https://api.qrserver.com/v1/create-qr-code/?data=0x5A9fb97BCe03dc19Bd5C5a1C5d9589724886faF7&size=100x100" width="100" height="100"> |
+| **Bitcoin** | BTC | `bc1qe07ama7xm6kelgnmtt4vw0v67dajqp8dshyypg` | <img src="https://api.qrserver.com/v1/create-qr-code/?data=bc1qe07ama7xm6kelgnmtt4vw0v67dajqp8dshyypg&size=100x100" width="100" height="100"> |
+| **Solana** | SOL | `6inmZtJP2UGrKEKFEJamJ9L1CRSZvWpki1zq9xdSocsU` | <img src="https://api.qrserver.com/v1/create-qr-code/?data=6inmZtJP2UGrKEKFEJamJ9L1CRSZvWpki1zq9xdSocsU&size=100x100" width="100" height="100"> |
+| **TRON** | TRX (TRC-20) | `TG29v6vuJBfsUGqbbcjFvz8iB5yJCDjsK2` | <img src="https://api.qrserver.com/v1/create-qr-code/?data=TG29v6vuJBfsUGqbbcjFvz8iB5yJCDjsK2&size=100x100" width="100" height="100"> |
+
+---
+
 ## 📄 License & Credits
 
 Developed with ❤️ by **MRD technologies**.  

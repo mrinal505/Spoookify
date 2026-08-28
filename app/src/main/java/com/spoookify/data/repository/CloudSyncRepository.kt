@@ -150,4 +150,54 @@ class CloudSyncRepository @Inject constructor(
             _isSyncing.value = false
         }
     }
+
+    fun publishPlaybackState(
+        trackId: String,
+        title: String,
+        artist: String,
+        thumbnailUrl: String,
+        isPlaying: Boolean
+    ) {
+        val user = authManager.currentUser.value
+        if (!user.isSignedIn || firestore == null) return
+        val data = mapOf(
+            "activeDeviceId" to "mobile_app",
+            "commandSource" to "mobile_app",
+            "command" to if (isPlaying) "PLAY" else "PAUSE",
+            "trackId" to trackId,
+            "title" to title,
+            "artist" to artist,
+            "thumbnailUrl" to thumbnailUrl,
+            "isPlaying" to isPlaying,
+            "timestamp" to System.currentTimeMillis()
+        )
+        firestore.collection("users").document(user.uid)
+            .collection("data").document("playback_state")
+            .set(data, com.google.firebase.firestore.SetOptions.merge())
+    }
+
+    fun listenToRemotePlaybackCommands(onCommand: (cmd: String, trackId: String, title: String, artist: String, thumbnailUrl: String, audioUrl: String) -> Unit) {
+        scope.launch {
+            authManager.currentUser.collect { user ->
+                if (!user.isSignedIn || firestore == null) return@collect
+                firestore.collection("users").document(user.uid)
+                    .collection("data").document("playback_state")
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null || snapshot == null || !snapshot.exists()) return@addSnapshotListener
+                        val source = snapshot.getString("commandSource") ?: ""
+                        val activeDevice = snapshot.getString("activeDeviceId") ?: ""
+                        val cmd = snapshot.getString("command") ?: ""
+                        val trackId = snapshot.getString("trackId") ?: ""
+                        val title = snapshot.getString("title") ?: ""
+                        val artist = snapshot.getString("artist") ?: ""
+                        val thumbnailUrl = snapshot.getString("thumbnailUrl") ?: ""
+                        val audioUrl = snapshot.getString("audioUrl") ?: ""
+
+                        if (source == "web_player" && activeDevice == "mobile_app") {
+                            onCommand(cmd, trackId, title, artist, thumbnailUrl, audioUrl)
+                        }
+                    }
+            }
+        }
+    }
 }
